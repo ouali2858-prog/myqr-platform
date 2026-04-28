@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>لوحة الأدمن</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="navbar navbar-dark bg-dark px-3">
+  <span class="navbar-brand">👑 لوحة الأدمن</span>
+  <button id="logoutBtn" class="btn btn-outline-light">تسجيل خروج</button>
+</nav>
+<div class="container mt-4">
+  <div class="card mb-4">
+    <div class="card-header bg-success text-white">إضافة عميل جديد</div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col"><input id="newUsername" class="form-control" placeholder="اسم المستخدم"></div>
+        <div class="col"><input id="newPassword" type="password" class="form-control" placeholder="كلمة المرور"></div>
+        <div class="col"><button id="addClientBtn" class="btn btn-primary">إضافة</button></div>
+      </div>
+      <div id="msg" class="mt-2"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header bg-info text-white">قائمة العملاء</div>
+    <div class="card-body">
+      <table class="table" id="clientsTable"><thead><tr><th>ID</th><th>اسم المستخدم</th></thead><tbody></tbody></table>
+    </div>
+  </div>
+</div>
+<script>
+  async function loadClients() {
+    const res = await fetch('/api/admin/clients');
+    const clients = await res.json();
+    const tbody = document.querySelector('#clientsTable tbody');
+    tbody.innerHTML = '';
+    clients.forEach(c => {
+      tbody.innerHTML += `<tr><td>${c.id}</td><td>${c.username}</td></tr>`;
+    });
+  }
+  document.getElementById('addClientBtn').onclick = async () => {
+    const username = document.getElementById('newUsername').value;
+    const password = document.getElementById('newPassword').value;
+    const res = await fetch('/api/admin/add-client', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      document.getElementById('msg').innerText = '✅ تمت الإضافة';
+      loadClients();
+    } else {
+      document.getElementById('msg').innerText = data.error;
+    }
+  };
+  document.getElementById('logoutBtn').onclick = async () => {
+    await fetch('/api/logout', { method: 'POST' });
+    window.location.href = '/';
+  };
+  loadClients();
+</script>
+</body>
+</html>
+
+
+
