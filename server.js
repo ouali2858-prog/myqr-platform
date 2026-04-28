@@ -1,7 +1,7 @@
 // server.js
 const express = require('express');
 const { Pool } = require('pg');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const QRCode = require('qrcode');
 const path = require('path');
 require('dotenv').config();
